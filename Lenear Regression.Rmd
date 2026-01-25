@@ -239,17 +239,32 @@ dim(A)
 # The head() function can also be used to view the first few rows of the data.
 
 ```{r}
-Auto <- read.table("Auto.data")
+setwd("C:/Users/Javis/Documents/AUCA/DATA MINING DATASETS")
+```
+
+```{r}
+getwd()
+
+```
+
+
+
+```{r}
+Auto <- read.csv("Auto.csv")
 View(Auto)
 head(Auto)
+
 ```
 
 
 ```{r}
-Auto <- read.table("Auto.data", header = T, na.strings = "?",
+Auto <- read.csv("Auto.csv", header = T, na.strings = "?",
 stringsAsFactors = T)
 View(Auto)
 ```
+
+
+
 
 
 
