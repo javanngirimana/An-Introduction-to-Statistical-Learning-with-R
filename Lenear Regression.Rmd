@@ -264,6 +264,92 @@ View(Auto)
 ```
 
 
+# An easy way to load data from Excel into R is to save it as a csv (comma-separated values) file, and then use the read.csv() function.
+```{r}
+Auto <- read.csv("Auto.csv", na.strings = "?", stringsAsFactors = TRUE)
+
+```
+
+```{r}
+Auto <- read.csv(
+  "C:/Users/Javis/Documents/AUCA/DATA MINING/Auto.csv",
+  na.strings = "?",
+  stringsAsFactors = TRUE)
+list.files()
+
+```
+
+
+# The dim() function tells us that the data has 397 observations, or rows, and dim() nine variables, or columns.
+
+```{r}
+View(Auto)
+dim(Auto)
+```
+
+
+
+# only five of the rows contain missing observations, and
+# so we choose to use the na.omit() function to simply remove these rows. 
+
+```{r}
+Auto <- na.omit(Auto)
+dim(Auto)
+```
+
+# Once the data are loaded correctly, we can use names() to check the names() variable names.
+
+```{r}
+names(Auto)
+```
+
+#2.3.5 Additional Graphical and Numerical Summaries
+
+# We can use the plot() function to produce scatterplots of the quantitative scatterplot variables
+
+```{r}
+plot(cylinders, mpg)
+```
+
+# To refer to a variable, we must type the data set and the variable name joined with a $ symbol. Alternatively, we can use the attach() function in attach() order to tell R to make the variables in this data frame available by name
+
+```{r}
+plot(Auto$cylinders, Auto$mpg)
+attach(Auto)
+plot(cylinders, mpg)
+```
+
+
+# The as.factor() function converts quantitative variables into qualitative as.factor() variables.
+
+```{r}
+cylinders <- as.factor(cylinders)
+```
+
+# As usual, a number of options can be specified in order to customize the plots.
+
+```{r}
+plot(cylinders, mpg)
+plot(cylinders , mpg, col = "red")
+plot(cylinders , mpg, col = "red", varwidth = T)
+plot(cylinders , mpg, col = "red", varwidth = T,
+horizontal = T)
+plot(cylinders , mpg, col = "red", varwidth = T,
+xlab = "cylinders", ylab = "MPG")
+```
+
+# The hist() function can be used to plot a histogram. Note that col = 2 hist() histogram has the same effect as col = "red".
+
+```{r}
+hist(mpg)
+hist(mpg, col = 2)
+hist(mpg, col = 2, breaks = 15)
+```
+
+
+
+
+
 
 
 
