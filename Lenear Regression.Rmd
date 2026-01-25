@@ -1,0 +1,172 @@
+---
+title: "Lenear Regression"
+author: "Javan"
+date: "2026-01-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+# Statistical Learning
+#2.3.1 Basic Commands
+# R uses functions to perform operations
+# In the following formulas, you can use (= or <-) signs
+
+x <- c(1, 3, 2, 5)
+x
+```
+```{r}
+x= c(1, 6, 2)
+x
+y= c(1, 4, 3)
+y
+```
+
+
+# length
+```{r}
+x= c(1, 6, 2)
+y= c(1, 4, 3)
+length(x)
+length(y)
+x+y
+```
+
+# We use (ls) to display all functions used before
+# we use (rm) to delete unwanted functions
+```{r}
+ls()
+
+rm()
+```
+
+# It’s also possible to remove all objects at once:
+```{r}
+rm(list = ls())
+```
+
+
+
+```{r}
+ls()
+```
+
+# Matrix
+# Option 1 of designing matrix
+```{r}
+x <- matrix(data = c(1, 2, 3, 4), nrow = 2, ncol = 2)
+x
+```
+# Option 2 of designing matrix
+```{r}
+x <- matrix(c(1, 2, 3, 4), 2, 2)
+x
+```
+
+
+# Option 3 of designing matrix (byrow = TRUE)
+```{r}
+matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE)
+```
+
+# The sqrt() function returns the square root of each sqrt() element of a vector or matrix.
+```{r}
+sqrt(x)
+```
+
+# The command x^2 raises each element of x to the power 2
+```{r}
+x^2
+```
+
+
+# The rnorm() function generates a vector of random normal variables, rnorm() with first argument n the sample size. 
+
+```{r}
+x <- rnorm(50)
+y <- x + rnorm(50, mean = 50, sd = .1)
+cor(x, y)
+```
+
+
+# we can use the (set.seed()) to reproduce the exact same set of random numbers
+```{r}
+set.seed(1303)
+rnorm(50)
+```
+
+
+# The mean() and var() functions can be used to compute the mean and mean() var() variance of a vector of numbers.
+
+```{r}
+set.seed(3)
+y <- rnorm(100)
+mean(y)
+var(y)
+sqrt(var(y))
+sd(y)
+```
+
+# Graphics
+# Statistical Learning
+
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+plot(x, y)
+plot(x, y, xlab = "this is the x-axis",
+ylab = "this is the y-axis",
+main = "Plot of X vs Y")
+```
+
+
+# to create a pdf, we use the pdf() function, and to create a jpeg, pdf() we use the jpeg() function.
+
+```{r}
+pdf("Figure.pdf")
+plot(x, y, col = "green")
+dev.off()
+```
+
+# integer arguments.
+
+```{r}
+x <- seq(1, 10)
+x
+x <- 1:10
+x
+x <- seq(-pi, pi, length = 50)
+```
+
+
+
+
+
+
+
+
+
+
