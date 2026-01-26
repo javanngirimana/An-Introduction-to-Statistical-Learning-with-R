@@ -349,6 +349,35 @@ hist(mpg, col = 2, breaks = 15)
 
 
 
+# The pairs() function creates a scatterplot matrix
+```{r}
+pairs(Auto)
+pairs(
+  ∼ mpg + displacement + horsepower + weight + acceleration,
+data = Auto
+)
+```
+# The numbers printed under the identify() function correspond to the rows for the selected points.
+```{r}
+plot(horsepower, mpg)
+identify(horsepower , mpg, name)
+```
+
+# The summary() function produces a numerical summary of each variable in a particular data set.
+```{r}
+ summary(Auto)
+```
+
+# For qualitative variables such as name, R will list the number of observations that fall in each category. We can also produce a summary of just a single variable.
+```{r}
+summary(mpg)
+```
+
+# 
+
+
+
+
 
 
 
