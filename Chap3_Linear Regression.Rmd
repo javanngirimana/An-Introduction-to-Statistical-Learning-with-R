@@ -1,0 +1,316 @@
+---
+title: "Chap3_Linear Regression"
+author: "Javan"
+date: "2026-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+
+# 3 Linear Regression
+# 3.6 Lab: Linear Regression
+# 3.6.1 Libraries
+The library() function is used to load libraries, or groups of functions and data sets that are not included in the base R distribution.
+```{r}
+# install.packages("MASS")
+library(MASS)
+library(ISLR2)
+```
+
+# 3.6.2 Simple Linear Regression
+The ISLR2 library contains the Boston data set, which records medv (median house value) for 506 census tracts in Boston.
+```{r}
+head(Boston)
+```
+
+To find out more about the data set, we can type ?Boston.
+We will start by using the lm() function to fit a simple linear regression model, with medv as the response and lstat as the predictor.
+
+# 3. Linear Regression
+```{r}
+lm.fit <- lm(medv ∼ lstat)
+```
+
+# Error in eval(expr, envir, enclos) : Object "medv" not found
+The command causes an error because R does not know where to find the variables medv and lstat.
+The next line tells R that the variables are in Boston. If we attach Boston, the first line works fine because R now recognizes the variables.
+
+```{r}
+lm.fit <- lm(medv ~ lstat, data = Boston)
+```
+
+
+
+# If we type lm.fit, some basic information about the model is output.
+```{r}
+lm.fit
+```
+
+# For more detailed information, we use summary(lm.fit). 
+This gives us pvalues and standard errors for the coefficients, as well as the R2 statistic
+and F-statistic for the model.
+```{r}
+summary(lm.fit)
+```
+
+# We can use the names() function in order to find out what other pieces of information are stored in lm.fit.
+```{r}
+names(lm.fit)
+```
+
+# Although we can extract these quantities by name—e.g. lm.fit$coefficients—it is safer to use the extractor functions like coef() to access them.
+```{r}
+coef(lm.fit)
+```
+
+# In order to obtain a confidence interval for the coefficient estimates, we can use the confint() command.
+
+```{r}
+confint(lm.fit)
+```
+
+# The predict() function can be used to produce confidence intervals and prediction intervals for the prediction of medv for a given value of lstat.
+
+```{r}
+predict(lm.fit, data.frame(lstat = (c(5, 10, 15))),
+interval = "confidence")
+```
+
+```{r}
+predict(lm.fit, data.frame(lstat = (c(5, 10, 15))),
+interval = "prediction")
+```
+# We will now plot medv and lstat along with the least squares regression line using the plot() and abline() functions.
+
+```{r}
+plot(Boston$lstat, Boston$medv)
+abline(lm.fit)
+
+```
+
+There is some evidence for non-linearity in the relationship between lstat and medv.
+
+# The abline() function can be used to draw any line, not just the least squares regression line.
+The lwd = 3 command causes the width of the regression line to be increased by a factor of 3; this works for the plot() and lines() functions also. We can also use the pch option to create different plotting symbols.
+
+
+```{r}
+plot(Boston$lstat, Boston$medv)
+abline(lm.fit, lwd = 3)
+abline(lm.fit, lwd = 3, col = "red")
+
+plot(Boston$lstat, Boston$medv, col = "red")
+plot(Boston$lstat, Boston$medv, pch = 20)
+plot(Boston$lstat, Boston$medv, pch = "+")
+
+plot(1:20, 1:20, pch = 1:20)
+
+```
+
+
+# Next we examine some diagnostic plots, several of which were discussed in Section 3.3.3. Four diagnostic plots are automatically produced by applying the plot() function directly to the output from lm(). 
+In general, this command will produce one plot at a time, and hitting Enter will generate
+the next plot.
+For example, par(mfrow = c(2, 2)) divides the plotting region into a 2 × 2 grid of panels.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+```
+
+# Alternatively, we can compute the residuals from a linear regression fit using the residuals() function.
+```{r}
+plot(predict(lm.fit), residuals(lm.fit))
+plot(predict(lm.fit), rstudent(lm.fit))
+```
+
+# On the basis of the residual plots, there is some evidence of non-linearity.
+# Leverage statistics can be computed for any number of predictors using the hatvalues() function.
+
+```{r}
+plot(hatvalues(lm.fit))
+which.max(hatvalues(lm.fit))
+```
+
+# 3.6.3 Multiple Linear Regression
+In order to fit a multiple linear regression model using least squares, we again use the lm() function. The syntax lm(y ∼ x1 + x2 + x3) is used to fit a model with three predictors, x1, x2, and x3. The summary() function now outputs the regression coefficients for all the predictors.
+
+```{r}
+lm.fit <- lm(medv ~ lstat + age, data = Boston)
+summary(lm.fit)
+```
+
+# The Boston data set contains 12 variables, and so it would be cumbersome to have to type all of these in order to perform a regression using all of the predictors. Instead, we can use the following short-hand:
+
+```{r}
+lm.fit <- lm(medv ~ ., data = Boston)
+summary(lm.fit)
+```
+
+# We can access the individual components of a summary object by name (type ?summary.lm to see what is available).
+# The car package is not part of the base R installation so it must be downloaded the first time you use it via the install.packages() function in R.
+
+```{r}
+library(car)
+vif(lm.fit)
+```
+
+# What if we would like to perform a regression using all of the variables but one?
+# The following syntax results in a regression using all predictors except age.
+```{r}
+lm.fit1 <- lm(medv ~ . - age, data = Boston)
+summary(lm.fit1)
+
+```
+
+# Alternatively, the update() function can be used.
+```{r}
+ lm.fit1 <- update(lm.fit, ~ . - age)
+summary(lm.fit1)
+```
+
+# 3.6.4 Interaction Terms
+# It is easy to include interaction terms in a linear model using the lm() function. The syntax lstat:age tells R to include an interaction term between lstat and age.
+```{r}
+summary(lm(medv ~ lstat * age, data = Boston))
+```
+
+# 3.6.5 Non-linear Transformations of the Predictors
+# The lm() function can also accommodate non-linear transformations of the predictors.
+```{r}
+lm.fit2 <- lm(medv ~ lstat + I(lstat^2), data = Boston)
+summary(lm.fit2)
+```
+# The near-zero p-value associated with the quadratic term suggests that it leads to an improved model.
+```{r}
+lm.fit  <- lm(medv ~ lstat, data = Boston)
+lm.fit2 <- lm(medv ~ lstat + I(lstat^2), data = Boston)
+
+anova(lm.fit, lm.fit2)
+
+```
+# 
+
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit2)
+```
+
+# A better approach involves using the poly() function to create the polynomial within lm().
+# For example, the following command produces a fifth-order polynomial fit:
+
+```{r}
+lm.fit5 <- lm(medv ~ poly(lstat, 5), data = Boston)
+summary(lm.fit5)
+```
+# Here we try a log transformation.
+
+```{r}
+summary(lm(medv ~ log(rm), data = Boston))
+```
+
+# 3.6.6 Qualitative Predictors
+We will now examine the Carseats data, which is part of the ISLR2 library.
+We will attempt to predict Sales (child car seat sales) in 400 locations based on a number of predictors.
+```{r}
+head(Carseats)
+```
+
+# Given a qualitative variable such as Shelveloc, R generates dummy variables automatically. 
+Below we fit a multiple regression model that includes some interaction terms.
+```{r}
+lm.fit <- lm(Sales ~ . + Income:Advertising + Price:Age,
+data = Carseats)
+summary(lm.fit)
+```
+
+The contrasts() function returns the coding that R uses for the dummy variables.
+Use ?contrasts to learn about other contrasts, and how to set them.
+```{r}
+attach(Carseats)
+contrasts(ShelveLoc)
+```
+
+# 3.6.7 Writing Functions
+Before we have created the function, R returns an error if we try to call it.
+
+```{r}
+LoadLibraries
+LoadLibraries()
+```
+
+We can then input as many commands as we wish, hitting Enter after each one. Finally the } symbol informs R that no further commands will be entered.
+```{r}
+LoadLibraries <- function() {
+ library(ISLR2)
+ library(MASS)
+ print("The libraries have been loaded.")
+ }
+```
+
+# Now if we type in LoadLibraries, R will tell us what is in the function.
+
+```{r}
+LoadLibraries
+function() {
+library(ISLR2)
+library(MASS)
+print("The libraries have been loaded.")
+}
+```
+
+# If we call the function, the libraries are loaded in and the print statement is output.
+```{r}
+LoadLibraries()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
