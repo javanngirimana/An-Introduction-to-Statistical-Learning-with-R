@@ -1,0 +1,210 @@
+---
+title: "Chap5_Resampling Methods"
+author: "Javan"
+date: "2026-02-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+
+# Chap5_Resampling Methods
+
+We begin by using the sample() function to split the set of observations into two halves, by selecting a random subset of 196 observations out of the original 392 observations. We refer to these observations as the training set.
+```{r}
+library(ISLR2)
+set.seed(1)
+train <- sample(392, 196)
+```
+
+
+We then use the subset option in lm() to fit a linear regression using only the observations corresponding to the training set.
+```{r}
+lm.fit <- lm(mpg ~ horsepower, data = Auto, subset = train)
+```
+
+ Note that the -train index below selects only the observations that are not in the training set.
+ 
+```{r}
+attach(Auto)
+mean((mpg - predict(lm.fit, Auto))[-train]^2)
+```
+
+Therefore, the estimated test MSE for the linear regression fit is 23.27. We can use the poly() function to estimate the test error for the quadratic and cubic regressions.
+```{r}
+lm.fit2 <- lm(mpg ~ poly(horsepower, 2), data = Auto,
+subset = train)
+mean((mpg - predict(lm.fit2, Auto))[-train]^2)
+```
+
+```{r}
+lm.fit3 <- lm(mpg ~ poly(horsepower, 3), data = Auto,
+subset = train)
+mean((mpg - predict(lm.fit3, Auto))[-train]^2)
+```
+
+These error rates are 18.72 and 18.79, respectively. If we choose a different training set instead, then we will obtain somewhat different errors on the validation set.
+
+```{r}
+set.seed(2)
+train <- sample(392, 196)
+lm.fit <- lm(mpg ~ horsepower, subset = train)
+mean((mpg - predict(lm.fit, Auto))[-train]^2)
+```
+
+```{r}
+lm.fit2 <- lm(mpg ~ poly(horsepower, 2), data = Auto,
+subset = train)
+mean((mpg - predict(lm.fit2, Auto))[-train]^2)
+```
+
+```{r}
+lm.fit3 <- lm(mpg ~ poly(horsepower, 3), data = Auto,
+subset = train)
+mean((mpg - predict(lm.fit3, Auto))[-train]^2)
+```
+
+# 5.3.2 Leave-One-Out Cross-Validation
+But if we use glm() to fit a model without passing in the family argument, then it performs linear regression, just like the lm() function. So for instance, yield identical linear regression models.
+
+```{r}
+glm.fit <- glm(mpg ~ horsepower, data = Auto)
+coef(glm.fit)
+```
+
+and 
+```{r}
+lm.fit <- lm(mpg ~ horsepower, data = Auto)
+coef(lm.fit)
+```
+
+# The cv.glm() function is part of the boot library.
+```{r}
+library(boot)
+glm.fit <- glm(mpg ~ horsepower, data = Auto)
+cv.err <- cv.glm(Auto, glm.fit)
+cv.err$delta
+```
+
+# We begin by initializing the vector.
+```{r}
+cv.error <- rep(0, 10)
+for (i in 1:10) {
+glm.fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
+cv.error[i] <- cv.glm(Auto, glm.fit)$delta[1]
+}
+cv.error
+```
+
+# 5.3.3 k-Fold Cross-Validation
+We once again set a random seed and initialize a vector in which we will store the CV errors corresponding to the polynomial fits of orders one to ten.
+```{r}
+set.seed(17)
+cv.error.10 <- rep(0, 10)
+for (i in 1:10) {
+glm.fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
+cv.error.10[i] <- cv.glm(Auto, glm.fit, K = 10)$delta[1]
+}
+cv.error.10
+```
+
+# 5.3.4 The Bootstrap
+# The function then outputs the estimate for α based on the selected observations.
+```{r}
+alpha.fn <- function(data, index) {
+X <- data$X[index]
+Y <- data$Y[index]
+(var(Y) - cov(X, Y)) / (var(X) + var(Y) - 2 * cov(X, Y))
+}
+```
+
+For instance, the following command tells R to estimate α using all 100 observations.
+```{r}
+alpha.fn(Portfolio, 1:100)
+```
+
+The next command uses the sample() function to randomly select 100 observations from the range 1 to 100, with replacement. This is equivalent to constructing a new bootstrap data set and recomputing αˆ based on the new data set.
+
+```{r}
+set.seed(7)
+alpha.fn(Portfolio, sample(100, 100, replace = T))
+```
+
+# However, the boot() function automates this approach. Below we produce R = 1, 000 bootstrap estimates for α.
+```{r}
+boot(Portfolio , alpha.fn, R = 1000)
+```
+Note that we do not need the { and } at the beginning and end of the function because it is only one line long.
+```{r}
+boot.fn <- function(data, index)
+coef(lm(mpg ~ horsepower, data = data, subset = index))
+boot.fn(Auto, 1:392)
+```
+
+The boot.fn() function can also be used in order to create bootstrap estimates for the intercept and slope terms by randomly sampling from among the observations with replacement. Here we give two examples.
+```{r}
+set.seed(1)
+boot.fn(Auto, sample(392, 392, replace = T))
+```
+
+```{r}
+boot.fn(Auto, sample(392, 392, replace = T))
+```
+# Next, we use the boot() function to compute the standard errors of 1,000 bootstrap estimates for the intercept and slope terms.
+```{r}
+boot(Auto, boot.fn, 1000)
+```
+
+As discussed in Section 3.1.2, standard formulas can be used to compute the standard errors for the regression coefficients in a linear model. These can be obtained using the
+summary() function.
+```{r}
+summary(lm(mpg ~ horsepower, data = Auto))$coef
+```
+# Below we compute the bootstrap standard error estimates and the standard linear regression estimates that result from fitting the quadratic model to the data. 
+```{r}
+#install.packages("boot")
+
+```
+# Since this model provides a good fit to the data (Figure 3.8), there is now a better correspondence between the bootstrap estimates and the standard estimates of SE(βˆ0), SE(βˆ1) and SE(βˆ2).
+
+```{r}
+library(boot)
+boot.fn <- function(data, index)
+coef(
+lm(mpg ~ horsepower + I(horsepower^2),
+data = data, subset = index)
+)
+set.seed(1)
+boot(Auto, boot.fn, 1000)
+```
+
+```{r}
+summary(
+lm(mpg ~ horsepower + I(horsepower^2), data = Auto)
+)$coef
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
